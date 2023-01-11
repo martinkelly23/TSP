@@ -46,6 +46,26 @@ class TravelingSalesmanProblemSolver():
         return best_permutation, best_distance
     
     
+    def solve_brute_force_fixed_start_and_end(self) -> Tuple[Optional[List], Any]:
+        last_point = (self.distance_matrix.shape[0] - 1)
+        # Exclude first and last points since are the start and end
+        points = range(1, last_point)
+        best_distance = np.inf
+        best_permutation = None
+
+        for partial_permutation in permutations(points):
+            # Add the starting and ending nodes before evaluating it
+            permutation = [0] + list(partial_permutation) + [last_point]
+            print("Computing permutation: ", permutation)
+            distance = self._compute_permutation_distance(permutation)
+
+            if distance < best_distance:
+                best_distance = distance
+                best_permutation = permutation
+
+        return best_permutation, best_distance
+    
+    
     def _compute_permutation_distance(self, permutation: List[int]) -> float:
         """Compute the total route distance of a given permutation
         Parameters
