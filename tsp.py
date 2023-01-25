@@ -9,7 +9,7 @@ class TravelingSalesmanProblemSolver():
     def __init__(self, distance_matrix):
         self.distance_matrix = distance_matrix
     
-    def solve_brute_force(self) -> Tuple[Optional[List], Any]:
+    def solve_brute_force_fixed_start(self) -> Tuple[Optional[List], Any]:
         """Solve TSP to optimality with a brute force approach
         Parameters
         ----------
@@ -38,7 +38,6 @@ class TravelingSalesmanProblemSolver():
             # Add the starting node before evaluating it
             permutation = [0] + list(partial_permutation)
             distance = self._compute_permutation_distance(permutation)
-
             if distance < best_distance:
                 best_distance = distance
                 best_permutation = permutation
@@ -56,9 +55,25 @@ class TravelingSalesmanProblemSolver():
         for partial_permutation in permutations(points):
             # Add the starting and ending nodes before evaluating it
             permutation = [0] + list(partial_permutation) + [last_point]
-            print("Computing permutation: ", permutation)
             distance = self._compute_permutation_distance(permutation)
 
+            if distance < best_distance:
+                best_distance = distance
+                best_permutation = permutation
+
+        return best_permutation, best_distance
+    
+    def solve_brute_force_fixed_end(self) -> Tuple[Optional[List], Any]:
+        last_point = (self.distance_matrix.shape[0] - 1)
+        # Exclude last points since is the end
+        points = range(0, last_point)
+        best_distance = np.inf
+        best_permutation = None
+
+        for partial_permutation in permutations(points):
+            # Add the ending node
+            permutation = list(partial_permutation) + [last_point]
+            distance = self._compute_permutation_distance(permutation)
             if distance < best_distance:
                 best_distance = distance
                 best_permutation = permutation
@@ -90,6 +105,7 @@ class TravelingSalesmanProblemSolver():
         This can easily be generalized to any permutation by using ind1 as the
         given permutation, and moving the first node to the end to generate ind2.
         """
+        print("Computing permutation: ", permutation)
         ind1 = permutation
         ind2 = permutation[1:] + permutation[:1]
         return self.distance_matrix[ind1, ind2].sum()
